@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+/* Tailwind v4 theme using CSS variables */
+:root {
+  --color-primary: #3713ec;
+
+  --color-bg-light: #f6f6f8;
+  --color-bg-dark: #131022;
+
+  --text-color: #ffffff;
+
+  /* radii */
+  --radius: 0.25rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-full: 9999px;
+}
+
+/* Glass + glow effects */
+.glow-effect {
+  position: relative;
+  overflow: hidden;
+}
+.glow-effect::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% -20%, rgba(55, 19, 236, 0.2), transparent 40%),
+    radial-gradient(circle at 10% 20%, rgba(0, 191, 255, 0.15), transparent 50%),
+    radial-gradient(circle at 90% 80%, rgba(138, 43, 226, 0.15), transparent 60%);
+  opacity: 0.6;
+  transition: opacity 0.3s;
+  z-index: 0;
+}
+
+.glassmorphism {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+
+
+.gradient-border-glow {
+  position: relative;
+  z-index: 1;
+}
+.gradient-border-glow::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.8), rgba(168, 85, 247, 0.8));
+  z-index: -1;
+  filter: blur(6px);
+  opacity: 0.7;
+  transition: opacity 0.3s ease-in-out;
+}
+.gradient-border-glow:hover::before {
+  opacity: 1;
+}
+
+@keyframes dropdown {
+  0% {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-dropdown {
+  animation: dropdown 0.18s ease-out forwards;
+}
