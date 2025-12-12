@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
 import MobileNavbar from "./MobileNavbar"; // Assuming this handles the hamburger menu
-import Button from "./Button";
+import Button from "./home/Button";
 
 const navbarLinks = [
   {
@@ -76,19 +76,27 @@ const Navbar = () => {
       <div className="flex gap-3 items-center justify-end">
         {/* Changed 'login' to 'Log in' */}
         <div className="hidden sm:block">
-          <Button size="sm" variant="ghost" className="text-white hover:text-primary">
+          <Button
+            size="sm"
+            color="secondary"
+            className="text-white hover:text-primary"
+          >
             Log in
           </Button>
         </div>
-        
+
         {/* Changed 'Sign in' to 'Sign up' for distinct CTA */}
-        <Button size="sm" className="px-5 rounded-full font-semibold" color="primary">
+        <Button
+          size="sm"
+          className="px-5 rounded-full font-semibold"
+          color="primary"
+        >
           Sign up
         </Button>
 
         {/* Mobile menu trigger usually goes here */}
         <div className="md:hidden">
-            <MobileNavbar navbarLinks={navbarLinks} />
+          <MobileNavbar navbarLinks={navbarLinks} />
         </div>
       </div>
     </header>

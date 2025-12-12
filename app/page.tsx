@@ -1,7 +1,7 @@
-import Button from "@/components/Button";
-import CategorySection from "@/components/CategorySection";
-import Footer from "@/components/Footer";
-import Hero from "@/components//Hero";
+import Button from "@/components/home/Button";
+import CategorySection from "@/components/home/CategorySection";
+import Footer from "@/components/home/Footer";
+import Hero from "@/components/home/Hero";
 import React from "react";
 
 const page = () => {
