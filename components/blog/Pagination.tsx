@@ -1,6 +1,6 @@
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import React from "react";
-import Button from "../home/Button";
+import Button from "../ui/Button";
 
 const Pagination = () => {
   return (

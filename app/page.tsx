@@ -1,4 +1,4 @@
-import Button from "@/components/home/Button";
+import Button from "@/components/ui/Button";
 import CategorySection from "@/components/home/CategorySection";
 import Footer from "@/components/home/Footer";
 import Hero from "@/components/home/Hero";

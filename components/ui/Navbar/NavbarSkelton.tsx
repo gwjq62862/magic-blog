@@ -1,5 +1,4 @@
-import Skeleton from "./Skeleton";
-
+import Skeleton from "../Skeleton";
 
 const NavbarSkeleton = () => {
   return (

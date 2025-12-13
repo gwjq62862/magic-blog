@@ -6,8 +6,8 @@ import Navbar from "./Navbar";
 
 const NavbarProvider = () => {
   const pathName = usePathname();
-  const isHomeRoute = pathName === "/";
-  return isHomeRoute && <Navbar />;
+  const isAuthRoute = pathName === "/sign-in" || pathName === "/sign-up";
+  return isAuthRoute ? null : <Navbar />;
 };
 
 export default NavbarProvider;

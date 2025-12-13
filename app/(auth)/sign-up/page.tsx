@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import Button from "@/components/home/Button";
+import Button from "@/components/ui/Button";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { UserRound, Mail, Lock, Github, Chrome, Apple } from "lucide-react";

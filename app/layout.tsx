@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-import NavbarProvider from "@/components/NavbarProvider";
+import NavbarProvider from "@/components/ui/Navbar/NavbarProvider";
 import { ConvexClientProvider } from "./ConvexClientProvider";
 
 const geistSans = Geist({
@@ -28,13 +28,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="font-display bg-(--color-bg-light) dark:bg-(--color-bg-dark) text-white">
-       
-        
-     <ConvexClientProvider>
-      <NavbarProvider/>
-      {children}
-      </ConvexClientProvider>
-     
+        <ConvexClientProvider>
+          <NavbarProvider />
+          {children}
+        </ConvexClientProvider>
       </body>
     </html>
   );

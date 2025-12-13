@@ -1,15 +1,15 @@
 "use client";
 import Link from "next/link";
-import Button from "@/components/home/Button";
+import Button from "@/components/ui/Button";
 import React, { useState } from "react";
 import { Mail, Lock, Github, Chrome, Apple } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
-type FormDataType ={
-  email:string;
-  password:string;
-}
+type FormDataType = {
+  email: string;
+  password: string;
+};
 const SignIn = () => {
   const router = useRouter();
   const { register, handleSubmit } = useForm<FormDataType>({
@@ -18,14 +18,14 @@ const SignIn = () => {
       password: "",
     },
   });
-  const LoginSubmit = async (formData:FormDataType) => {
+  const LoginSubmit = async (formData: FormDataType) => {
     try {
       const { error } = await authClient.signIn.email({
         email: formData.email,
         password: formData.password,
       });
       router.push("/");
-     
+
       if (error) {
         return alert(`sing in feild ${error.message}`);
       }

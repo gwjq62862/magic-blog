@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
 import MobileNavbar from "./MobileNavbar"; // Assuming this handles the hamburger menu
-import Button from "./home/Button";
+import Button from "../Button";
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
 import { Plus } from "lucide-react";
 import NavbarSkeleton from "./NavbarSkelton";
@@ -29,7 +29,7 @@ const Navbar = () => {
   return (
     <header className="flex items-center justify-between whitespace-nowrap px-4 sm:px-6 py-4 glassmorphism rounded-xl relative z-50">
       {/* 1. Left: Logo */}
-      <div className="flex items-center gap-10 text-white flex-shrink-0">
+      <div className="flex items-center gap-10 text-white shrink-0">
         <Link className="flex items-center gap-3" href="/">
           <div className="size-6 text-primary">
             <svg
@@ -78,8 +78,9 @@ const Navbar = () => {
       {/* 3. Right: Actions */}
       <div className="flex gap-3 items-center justify-end">
         <AuthLoading>
-    
-          <NavbarSkeleton />
+          <div className="hidden md:block">
+            <NavbarSkeleton />
+          </div>
         </AuthLoading>
         <Unauthenticated>
           <div className="hidden sm:block">
@@ -105,7 +106,7 @@ const Navbar = () => {
           </Link>
         </Unauthenticated>
         <Authenticated>
-          <div className="sm:hidden md:block">
+          <div className="hidden md:block">
             <Button size="sm" color="primary">
               <Plus /> <span className="text-sm leading-none">Create Post</span>
             </Button>
