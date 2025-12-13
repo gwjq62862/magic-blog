@@ -4,6 +4,9 @@ import { usePathname } from "next/navigation";
 import React from "react";
 import MobileNavbar from "./MobileNavbar"; // Assuming this handles the hamburger menu
 import Button from "./home/Button";
+import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
+import { Plus } from "lucide-react";
+import NavbarSkeleton from "./NavbarSkelton";
 
 const navbarLinks = [
   {
@@ -74,26 +77,40 @@ const Navbar = () => {
 
       {/* 3. Right: Actions */}
       <div className="flex gap-3 items-center justify-end">
-        {/* Changed 'login' to 'Log in' */}
-        <div className="hidden sm:block">
-          <Button
-            size="sm"
-            color="secondary"
-            className="text-white hover:text-primary"
-          >
-            Log in
-          </Button>
-        </div>
+        <AuthLoading>
+    
+          <NavbarSkeleton />
+        </AuthLoading>
+        <Unauthenticated>
+          <div className="hidden sm:block">
+            <Link href={"/sign-in"}>
+              <Button
+                size="sm"
+                color="secondary"
+                className="text-white hover:text-primary"
+              >
+                Log in
+              </Button>
+            </Link>
+          </div>
 
-        {/* Changed 'Sign in' to 'Sign up' for distinct CTA */}
-        <Button
-          size="sm"
-          className="px-5 rounded-full font-semibold"
-          color="primary"
-        >
-          Sign up
-        </Button>
-
+          <Link href={"/sign-up"}>
+            <Button
+              size="sm"
+              className="px-5 rounded-full font-semibold"
+              color="primary"
+            >
+              Sign up
+            </Button>
+          </Link>
+        </Unauthenticated>
+        <Authenticated>
+          <div className="sm:hidden md:block">
+            <Button size="sm" color="primary">
+              <Plus /> <span className="text-sm leading-none">Create Post</span>
+            </Button>
+          </div>
+        </Authenticated>
         {/* Mobile menu trigger usually goes here */}
         <div className="md:hidden">
           <MobileNavbar navbarLinks={navbarLinks} />

@@ -1,9 +1,40 @@
+"use client";
 import Link from "next/link";
 import Button from "@/components/home/Button";
-import React from "react";
+import React, { useState } from "react";
 import { Mail, Lock, Github, Chrome, Apple } from "lucide-react";
-
+import { useForm } from "react-hook-form";
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
+type FormDataType ={
+  email:string;
+  password:string;
+}
 const SignIn = () => {
+  const router = useRouter();
+  const { register, handleSubmit } = useForm<FormDataType>({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+  const LoginSubmit = async (formData:FormDataType) => {
+    try {
+      const { error } = await authClient.signIn.email({
+        email: formData.email,
+        password: formData.password,
+      });
+      router.push("/");
+     
+      if (error) {
+        return alert(`sing in feild ${error.message}`);
+      }
+    } catch (error) {
+      console.error("sing in fail", error);
+      return alert(`sing in fail`);
+    }
+  };
+
   return (
     <main className="relative z-10 w-full max-w-2xl">
       <div className="bg-black/40 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
@@ -20,7 +51,7 @@ const SignIn = () => {
             </p>
           </div>
 
-          <form className="space-y-5">
+          <form className="space-y-5" onSubmit={handleSubmit(LoginSubmit)}>
             <label className="flex flex-col gap-2 text-sm font-medium text-gray-200">
               Email
               <div className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/5 px-4 py-3 focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/30">
@@ -29,6 +60,8 @@ const SignIn = () => {
                   className="flex-1 bg-transparent text-white placeholder:text-gray-500 focus:outline-none"
                   type="email"
                   placeholder="you@example.com"
+                  {...register("email")}
+                  required
                 />
               </div>
             </label>
@@ -41,6 +74,8 @@ const SignIn = () => {
                   className="flex-1 bg-transparent text-white placeholder:text-gray-500 focus:outline-none"
                   type="password"
                   placeholder="Enter your password"
+                  {...register("password")}
+                  required
                 />
               </div>
             </label>

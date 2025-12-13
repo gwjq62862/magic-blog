@@ -1,12 +1,10 @@
 import React from "react";
 
 type ButtonProps = {
-  children: React.ReactNode; // text or icon inside button
-  color?: "primary" | "white" | "secondary"; // different color themes
-  size?: "sm" | "md" | "lg"; // button size
-  onClick?: () => void; // click handler
-  className?: string; // extra classes if needed
-};
+  color?: "primary" | "white" | "secondary";
+  size?: "sm" | "md" | "lg";
+} & React.ButtonHTMLAttributes<HTMLButtonElement>;
+
 
 const Button: React.FC<ButtonProps> = ({
   children,
@@ -14,6 +12,7 @@ const Button: React.FC<ButtonProps> = ({
   size = "md",
   onClick,
   className = "",
+  ...prop
 }) => {
   // Tailwind classes based on size
   const sizeClasses = {
@@ -34,6 +33,7 @@ const Button: React.FC<ButtonProps> = ({
       onClick={onClick}
       className={`flex items-center cursor-pointer justify-center overflow-hidden rounded-full font-bold tracking-wide transition-all duration-300 transform hover:scale-105
         ${sizeClasses[size]} ${colorClasses[color]} ${className}`}
+        {...prop}
     >
       {children}
     </button>

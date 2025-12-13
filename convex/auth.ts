@@ -18,6 +18,8 @@ export const createAuth = (
     logger: { disabled: optionsOnly },
     baseURL: siteUrl,
     database: authComponent.adapter(ctx),
+   
+
     emailAndPassword: {
       enabled: true,
       requireEmailVerification: false,
