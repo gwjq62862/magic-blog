@@ -1,3 +1,6 @@
+@import '../styles/_variables.scss';
+@import '../styles/_keyframe-animations.scss';
+
 @import "tailwindcss";
 
 /* Tailwind v4 theme using CSS variables */
@@ -41,6 +44,19 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+
+.simple-editor-wrapper {
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  min-height: 250px;              /* consistent height */
+  transition: border-color 0.15s ease;
+}
+
+.simple-editor-wrapper:focus-within {
+  border-color: rgba(255, 255, 255, 0.4);
+}
 
 
 .gradient-border-glow {
