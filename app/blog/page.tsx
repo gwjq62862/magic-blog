@@ -1,10 +1,21 @@
+"use client";
 import BlogCard from "@/components/blog/BlogCard";
 import Pagination from "@/components/blog/Pagination";
 import SearchInput from "@/components/blog/SearchInput";
+import { api } from "@/convex/_generated/api";
 import { blogData } from "@/data/dummyData";
-import React from "react";
+import { usePaginatedQuery } from "convex/react";
+import React, { useState } from "react";
 
 const BlogPage = () => {
+  const [search, setSearch] = useState("");
+
+  const { results, status, loadMore } = usePaginatedQuery(
+    api.blogPost.listPaginated,
+    { search: search || undefined },
+    { initialNumItems: 9 }
+  );
+
   return (
     <main className="mt-12 sm:mt-16">
       {/* PageHeading */}
@@ -19,23 +30,27 @@ const BlogPage = () => {
       </div>
 
       {/* SearchBar and Chips */}
-      <SearchInput />
+      <SearchInput value={search} onChange={setSearch} />
 
       {/* ImageGrid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4 mt-12">
-         {blogData.map((post) => (
-        <BlogCard
-          key={post.id}
-          title={post.title}
-          date={post.date}
-          description={post.description}
-          image={post.image}
-        />
-      ))}
+        {results?.map((post) => (
+          <BlogCard
+            key={post._id}
+            title={post.title}
+            date={new Date(post.createdAt).toLocaleDateString()}
+            description={post.description}
+            image={post.imageUrl ?? "/fallback.jpg"}
+          />
+        ))}
       </div>
 
       {/* Pagination */}
-   <Pagination/>
+      <Pagination
+        canLoadMore={status === "CanLoadMore"}
+        loading={status === "LoadingMore" || status === "LoadingFirstPage"}
+        onNext={() => loadMore(9)}
+      />
     </main>
   );
 };
