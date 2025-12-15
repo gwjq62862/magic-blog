@@ -61,7 +61,7 @@ export const listPaginated = query({
     let page;
 
     if (trimmed && trimmed.length > 0) {
-      // your search-index-based query here, then .paginate(...)
+      //  search-index-based query, then .paginate(...)
       page = await ctx.db
         .query("blogs")
         .withSearchIndex("search_text", (q) =>
@@ -76,7 +76,7 @@ export const listPaginated = query({
         .paginate(paginationOpts);
     }
 
-    // Enrich each blog in the page with an imageUrl
+  
    const enrichedPage = await Promise.all(
   page.page.map(async (blog: Doc<"blogs">) => ({
     ...blog,
@@ -91,3 +91,23 @@ export const listPaginated = query({
     };
   },
 })
+
+
+
+export const getById = query({
+  args: { id: v.id("blogs") },
+  async handler(ctx, { id }) {
+    const blog = await ctx.db.get(id);
+    if (!blog) return null;
+
+    // storing image in storage:
+    const imageUrl = blog.coverImageStorageId
+      ? await ctx.storage.getUrl(blog.coverImageStorageId)
+      : null;
+
+    return {
+      ...blog,
+      imageUrl,
+    };
+  },
+});

@@ -1,7 +1,13 @@
-@import '../styles/_variables.scss';
+/* 1. Global Tailwind core first */
+@import "tailwindcss";
+
+
+@plugin "@tailwindcss/typography";
+
+
+@import '../styles/_variables.scss'; 
 @import '../styles/_keyframe-animations.scss';
 
-@import "tailwindcss";
 
 /* Tailwind v4 theme using CSS variables */
 :root {
@@ -131,4 +137,25 @@
   100% {
     transform: translateX(100%);
   }
+}
+@layer utilities {
+  .tiptap h1 {
+    @apply text-3xl font-bold mb-3;
+  }
+  .tiptap h2 {
+    @apply text-2xl font-semibold mt-6 mb-2;
+  }
+  .tiptap p {
+    @apply mb-3 leading-relaxed;
+  }
+  .tiptap ul {
+    @apply list-disc pl-6 mb-3;
+  }
+  .tiptap ol {
+    @apply list-decimal pl-6 mb-3;
+  }
+
+ 
+
+
 }

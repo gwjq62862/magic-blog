@@ -5,6 +5,7 @@ import SearchInput from "@/components/blog/SearchInput";
 import { api } from "@/convex/_generated/api";
 import { blogData } from "@/data/dummyData";
 import { usePaginatedQuery } from "convex/react";
+import Link from "next/link";
 import React, { useState } from "react";
 
 const BlogPage = () => {
@@ -35,13 +36,14 @@ const BlogPage = () => {
       {/* ImageGrid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4 mt-12">
         {results?.map((post) => (
-          <BlogCard
-            key={post._id}
-            title={post.title}
-            date={new Date(post.createdAt).toLocaleDateString()}
-            description={post.description}
-            image={post.imageUrl ?? "/fallback.jpg"}
-          />
+          <Link key={post._id} href={`/blog/${post._id}`} className="block">
+            <BlogCard
+              title={post.title}
+              date={new Date(post.createdAt).toLocaleDateString()}
+              description={post.description}
+              image={post.imageUrl ?? "/fallback.jpg"}
+            />
+          </Link>
         ))}
       </div>
 
