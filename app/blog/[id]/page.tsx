@@ -23,14 +23,13 @@ const BlogDetailPage = () => {
   }
 
   if (post === null) {
-    // no such blog
-    notFound();
+    return <div>notFound</div>;
   }
 
   return (
     <main className="mt-12 sm:mt-16 px-4 max-w-3xl mx-auto">
       {/* Cover image */}
-      {post.imageUrl && (
+      {post?.imageUrl && (
         <div className="w-full aspect-video relative rounded-xl overflow-hidden mb-6">
           <Image
             src={post.imageUrl}
@@ -42,22 +41,31 @@ const BlogDetailPage = () => {
       )}
 
       {/* Title & meta */}
-      <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white mb-2">
-        {post.title}
+      <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-white mb-3 leading-snug">
+        {post?.title}
       </h1>
-      <p className="text-[#a19db9] text-sm mb-6">
-        {new Date(post.createdAt).toLocaleDateString()}
-      </p>
+      <div className="flex justify-between overflow-hidden">
+        <p className="text-[#a19db9] text-sm mb-6 mt-10">
+          {new Date(post.createdAt).toLocaleDateString()}
+        </p>
+
+        <Image
+          alt={post.author?.name || "Author"}
+          width={24}
+          height={24}
+          src={post.author?.profileImage || ""}
+          className="inline-block size-6 rounded-full ring-2 ring-gray-900 outline -outline-offset-1 outline-white/10"
+        />
+      </div>
 
       {/* Content (HTML from Tiptap) */}
 
-   <article className="prose prose-invert max-w-none">
-  <div
-    className="tiptap"
-    dangerouslySetInnerHTML={{ __html: post.description }}
-  />
-</article>
-
+      <article className="prose prose-invert max-w-none">
+        <div
+          className="tiptap"
+          dangerouslySetInnerHTML={{ __html: post.description }}
+        />
+      </article>
     </main>
   );
 };

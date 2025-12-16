@@ -8,45 +8,60 @@ import { Doc } from "./_generated/dataModel";
 
 // 1) Generate upload URL
 export const generateCoverUploadUrl = mutation({
-    args: {},
-    handler: async (ctx) => {
-        // check auth here only logged-in users to upload
-        const user = await authComponent.safeGetAuthUser(ctx);
-        if (!user) throw new Error("Unauthorized");
-        return await ctx.storage.generateUploadUrl();
-    },
+  args: {},
+  handler: async (ctx) => {
+    // check auth here only logged-in users to upload
+    const user = await authComponent.safeGetAuthUser(ctx);
+    if (!user) throw new Error("Unauthorized");
+    return await ctx.storage.generateUploadUrl();
+  },
 });
 
-// 2) Create blog post, taking a _storage id 
+
 export const createBlogPost = mutation({
-    args: {
-        title: v.string(),
-        description: v.string(),
-        coverImageStorageId: v.optional(v.id("_storage")),
-    },
-    handler: async (ctx, args) => {
-        const userMetadata = await authComponent.safeGetAuthUser(ctx);
-        if (!userMetadata) {
-            throw new Error("Unauthorized");
-        }
-        const userId = userMetadata._id;
-        if (!userId) {
+  args: {
+    title: v.string(),
+    description: v.string(),
+    coverImageStorageId: v.optional(v.id("_storage")),
+  },
+  handler: async (ctx, args) => {
+    const userMetadata = await authComponent.safeGetAuthUser(ctx);
+    if (!userMetadata) {
+      throw new Error("Unauthorized");
+    }
+    const userId = userMetadata._id;
+    if (!userId) {
 
-            throw new Error("Authenticated user has no userId");
-        }
-        const searchText =
-            (args.title + " " + args.description).toLowerCase();
-        const postId = await ctx.db.insert("blogs", {
-            title: args.title,
-            searchText,
-            description: args.description,
-            coverImageStorageId: args.coverImageStorageId,
-            authorId: userId,
-            createdAt: Date.now(),
-        });
+      throw new Error("Authenticated user has no userId");
+    }
 
-        return postId;
-    },
+    const profile = await ctx.db
+      .query("profiles")
+      .withIndex("by_authUserId", q => q.eq("authUserId", userId))
+      .unique();
+
+    if (!profile) {
+      throw new Error("No profile found for user");
+    }
+
+    // 2) Check role 
+    if (profile.role !== "admin") {
+
+      throw new Error("You do not have permission to create posts");
+    }
+    const searchText =
+      (args.title + " " + args.description).toLowerCase();
+    const postId = await ctx.db.insert("blogs", {
+      title: args.title,
+      searchText,
+      description: args.description,
+      coverImageStorageId: args.coverImageStorageId,
+      authorId: userId,
+      createdAt: Date.now(),
+    });
+
+    return postId;
+  },
 });
 
 
@@ -67,7 +82,7 @@ export const listPaginated = query({
         .withSearchIndex("search_text", (q) =>
           q.search("searchText", trimmed.toLowerCase()),
         )
-        .order("desc")
+
         .paginate(paginationOpts);
     } else {
       page = await ctx.db
@@ -76,15 +91,15 @@ export const listPaginated = query({
         .paginate(paginationOpts);
     }
 
-  
-   const enrichedPage = await Promise.all(
-  page.page.map(async (blog: Doc<"blogs">) => ({
-    ...blog,
-    imageUrl: blog.coverImageStorageId
-      ? await ctx.storage.getUrl(blog.coverImageStorageId)
-      : null,
-  })),
-);
+
+    const enrichedPage = await Promise.all(
+      page.page.map(async (blog: Doc<"blogs">) => ({
+        ...blog,
+        imageUrl: blog.coverImageStorageId
+          ? await ctx.storage.getUrl(blog.coverImageStorageId)
+          : null,
+      })),
+    );
     return {
       ...page,
       page: enrichedPage,
@@ -104,10 +119,13 @@ export const getById = query({
     const imageUrl = blog.coverImageStorageId
       ? await ctx.storage.getUrl(blog.coverImageStorageId)
       : null;
-
+    const profile = await ctx.db.query("profiles").withIndex("by_authUserId", q => q.eq("authUserId", blog.authorId)).unique();
     return {
       ...blog,
       imageUrl,
+      author: profile
+        ? { name: profile.name, role: profile.role, profileImage: profile.profileImage }
+        : null,
     };
   },
 });

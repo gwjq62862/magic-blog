@@ -15,4 +15,20 @@ export default defineSchema({
     searchField: "searchText",
    
   }),
+
+
+  
+
+  
+  profiles: defineTable({
+    authUserId: v.string(), 
+    name: v.string(),
+    profileImage:v.string(),
+    role: v.string(),          // "user", "admin", etc.
+    createdAt: v.float64(),
+  }).index("by_authUserId", {
+    fields: ["authUserId"],
+  }),
 });
+
+

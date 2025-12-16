@@ -11,6 +11,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'dynamic-orca-64.convex.cloud',
         
+      },{
+        protocol: 'https',
+        hostname: 'avatar.iran.liara.run',
+        
       },
     ],
   },

@@ -11,6 +11,7 @@
 import type * as auth from "../auth.js";
 import type * as blogPost from "../blogPost.js";
 import type * as http from "../http.js";
+import type * as user from "../user.js";
 
 import type {
   ApiFromModules,
@@ -22,6 +23,7 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   blogPost: typeof blogPost;
   http: typeof http;
+  user: typeof user;
 }>;
 
 /**

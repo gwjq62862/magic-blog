@@ -6,6 +6,8 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { UserRound, Mail, Lock, Github, Chrome, Apple } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 type SignUpFormValues = {
   name: string;
@@ -16,7 +18,7 @@ type SignUpFormValues = {
 
 const SignUp = () => {
   const [isLoading, setIsLoading] = useState(false);
-
+  const ensureUserProfile = useMutation(api.user.ensureUserProfile);
   const {
     register,
     handleSubmit,
@@ -30,7 +32,7 @@ const SignUp = () => {
     setIsLoading(true);
 
     try {
-      const { error } = await authClient.signUp.email({
+      const { error, data: result } = await authClient.signUp.email({
         name: data.name,
         email: data.email,
         password: data.password,
@@ -40,6 +42,11 @@ const SignUp = () => {
         alert(`Sign up failed: ${error.code} - ${error.message}`);
         return;
       }
+      const authUserId = result.user.id;
+      await ensureUserProfile({
+        authUserId,
+        name: data.name,
+      });
     } catch (err) {
       console.error("Sign up failed:", err);
     } finally {

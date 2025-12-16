@@ -3,13 +3,15 @@ import BlogCard from "@/components/blog/BlogCard";
 import Pagination from "@/components/blog/Pagination";
 import SearchInput from "@/components/blog/SearchInput";
 import { api } from "@/convex/_generated/api";
-import { blogData } from "@/data/dummyData";
+
+
 import { usePaginatedQuery } from "convex/react";
 import Link from "next/link";
 import React, { useState } from "react";
 
 const BlogPage = () => {
   const [search, setSearch] = useState("");
+
 
   const { results, status, loadMore } = usePaginatedQuery(
     api.blogPost.listPaginated,
@@ -34,7 +36,7 @@ const BlogPage = () => {
       <SearchInput value={search} onChange={setSearch} />
 
       {/* ImageGrid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4 mt-12">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6  mt-6 ">
         {results?.map((post) => (
           <Link key={post._id} href={`/blog/${post._id}`} className="block">
             <BlogCard

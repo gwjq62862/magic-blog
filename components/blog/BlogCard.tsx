@@ -5,9 +5,9 @@ interface BlogCardProps {
   description: string;
   image: string;
 }
-const BlogCard = ({ title, date, description, image }:BlogCardProps) => {
+const BlogCard = ({ title, date, description, image }: BlogCardProps) => {
   return (
-    <div className="flex flex-col gap-4 p-4 rounded-xl glassmorphism group hover:border-primary/50 transition-all duration-300 transform hover:-translate-y-1">
+    <div className="flex flex-col h-full max-w-sm gap-4 p-4 rounded-xl glassmorphism group hover:border-primary/50 transition-all duration-300 transform hover:-translate-y-1">
       <div className="w-full aspect-video rounded-lg overflow-hidden relative">
         <Image
           src={image}
@@ -17,14 +17,13 @@ const BlogCard = ({ title, date, description, image }:BlogCardProps) => {
         />
       </div>
 
-      <div>
+      <div className="flex-1">
         <p className="text-white text-lg font-bold">{title}</p>
-        <p className="text-[#a19db9] text-sm mt-1">
-          {date} 
-        </p>
+        <p className="text-[#a19db9] text-sm mt-1">{date}</p>
       </div>
     </div>
   );
 };
+
 
 export default BlogCard;
