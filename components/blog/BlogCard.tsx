@@ -13,6 +13,10 @@ const BlogCard = ({ title, date, description, image }: BlogCardProps) => {
           src={image}
           alt={title}
           fill
+          sizes="(max-width: 640px) 100vw,
+         (max-width: 1024px) 50vw,
+         25vw"
+          loading="lazy"
           className="object-cover group-hover:scale-105 transition-transform duration-300"
         />
       </div>
@@ -24,6 +28,5 @@ const BlogCard = ({ title, date, description, image }: BlogCardProps) => {
     </div>
   );
 };
-
 
 export default BlogCard;
