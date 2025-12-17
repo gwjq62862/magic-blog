@@ -4,7 +4,7 @@ import Link from "next/link";
 import Button from "@/components/ui/Button";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { UserRound, Mail, Lock, Github, Chrome, Apple } from "lucide-react";
+import { UserRound, Mail, Lock} from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -174,16 +174,7 @@ const SignUp = () => {
             <div className="grow border-t border-white/10" />
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
-            {[Github, Chrome, Apple].map((Icon, i) => (
-              <button
-                key={i}
-                className="flex items-center justify-center gap-2 h-11 rounded-lg bg-white/5 border border-white/10 text-gray-200 hover:bg-white/10"
-              >
-                <Icon className="h-4 w-4" />
-              </button>
-            ))}
-          </div>
+          
 
           <p className="text-center text-sm text-gray-400">
             Already have an account?{" "}

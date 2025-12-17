@@ -1,12 +1,13 @@
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import React from "react";
 import MobileNavbar from "./MobileNavbar"; // Assuming this handles the hamburger menu
 import Button from "../Button";
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
-import { Plus } from "lucide-react";
+import { ArrowLeftSquare, Plus } from "lucide-react";
 import NavbarSkeleton from "./NavbarSkelton";
+import { authClient } from "@/lib/auth-client";
 
 const navbarLinks = [
   {
@@ -25,7 +26,22 @@ const navbarLinks = [
 
 const Navbar = () => {
   const pathName = usePathname();
+  const router=useRouter()
+ const handleLogout = async () => {
+    try {
+    
+       await authClient.signOut();       
+    
 
+      // redirect
+      router.push("/sign-in");
+
+      //  force refresh user state
+      router.refresh();
+    } catch (err) {
+      console.error("Logout failed", err);
+    }
+  };
   return (
     <header className="flex items-center justify-between whitespace-nowrap px-4 sm:px-6 py-4 glassmorphism rounded-xl relative z-50">
       {/* 1. Left: Logo */}
@@ -106,11 +122,10 @@ const Navbar = () => {
           </Link>
         </Unauthenticated>
         <Authenticated>
-          <div className="hidden md:block">
-            <Button size="sm" color="primary">
-              <Plus /> <span className="text-sm leading-none">Create Post</span>
-            </Button>
-          </div>
+          <Button onClick={handleLogout}>
+            <ArrowLeftSquare className="mr-2" />
+            Logout
+          </Button>
         </Authenticated>
         {/* Mobile menu trigger usually goes here */}
         <div className="md:hidden">

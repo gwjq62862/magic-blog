@@ -1,6 +1,7 @@
 // convex/users.ts
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import { authComponent } from "./auth";
 
 
 export const ensureUserProfile = mutation({
@@ -38,3 +39,70 @@ export const getUserProfile = query({
     return userData;
   }
 })
+
+export const updateUserRole = mutation({
+  args: {
+    profileId: v.id("profiles"),
+    role: v.union(v.literal("user"), v.literal("admin")),
+  },
+  handler: async (ctx, { profileId, role }) => {
+    // 1) Who is making this change?
+    const authUser = await authComponent.safeGetAuthUser(ctx);
+    if (!authUser) {
+      throw new Error("Unauthorized");
+    }
+
+    const actingProfile = await ctx.db
+      .query("profiles")
+      .withIndex("by_authUserId", q => q.eq("authUserId", authUser._id))
+      .unique();
+
+    if (!actingProfile || actingProfile.role !== "admin") {
+      throw new Error("You do not have permission to change roles");
+    }
+
+    // 2) Update target user
+    const existing = await ctx.db.get(profileId);
+    if (!existing) {
+      throw new Error("Profile not found");
+    }
+
+    await ctx.db.patch(profileId, { role });
+  },
+});
+
+
+export const listProfiles = query({
+  args: {},
+  handler: async (ctx) => {
+    const authUser = await authComponent.safeGetAuthUser(ctx);
+    if (!authUser) return [];
+
+    const actingProfile = await ctx.db
+      .query("profiles")
+      .withIndex("by_authUserId", q => q.eq("authUserId", authUser._id))
+      .unique();
+
+    if (!actingProfile || actingProfile.role !== "admin") {
+      return [];
+    }
+
+    return await ctx.db.query("profiles").order("desc").collect();
+  },
+});
+
+
+export const getCurrentUserWithProfile = query({
+  args: {},
+  handler: async (ctx) => {
+    const authUser = await authComponent.safeGetAuthUser(ctx);
+    if (!authUser) return null;
+
+    const profile = await ctx.db
+      .query("profiles")
+      .withIndex("by_authUserId", q => q.eq("authUserId", authUser._id))
+      .unique();
+
+    return { user: authUser, profile };
+  },
+});

@@ -1,8 +1,8 @@
 "use client";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
-import React, { useState } from "react";
-import { Mail, Lock, Github, Chrome, Apple } from "lucide-react";
+import React from "react";
+import { Mail, Lock } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
@@ -24,11 +24,13 @@ const SignIn = () => {
         email: formData.email,
         password: formData.password,
       });
-      router.push("/");
+    
 
       if (error) {
         return alert(`sing in feild ${error.message}`);
       }
+        router.push("/");
+    
     } catch (error) {
       console.error("sing in fail", error);
       return alert(`sing in fail`);
@@ -104,21 +106,7 @@ const SignIn = () => {
             <div className="grow border-t border-white/10"></div>
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
-            {[
-              { label: "GitHub", icon: Github },
-              { label: "Google", icon: Chrome },
-              { label: "Apple", icon: Apple },
-            ].map(({ label, icon: Icon }) => (
-              <button
-                key={label}
-                className="flex items-center justify-center gap-2 h-11 rounded-lg bg-white/5 border border-white/10 text-gray-200 hover:bg-white/10 transition-colors duration-200 text-sm font-medium"
-              >
-                <Icon className="h-4 w-4" />
-                <span>{label}</span>
-              </button>
-            ))}
-          </div>
+          
 
           <p className="text-center text-sm text-gray-400">
             New here?{" "}

@@ -83,7 +83,7 @@ const CreateBlog = () => {
         coverImageStorageId,
       });
       showToast.success("blog created successfully!");
-      router.push("/")
+      router.push("/blog")
       reset();
       setCoverFile(null);
       setCoverPreview(null);

@@ -61,19 +61,24 @@ const visiblePosts: BlogItem[] =
     <main className="mt-12 sm:mt-16">
       <SearchInput value={search} onChange={setSearch} />
            
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-6 items-stretch">
-        {visiblePosts.map((post: BlogItem) => (
-          <Link key={post._id} href={`/blog/${post._id}`}>
-            <BlogCard
-              title={post.title}
-              date={new Date(post.createdAt).toLocaleDateString()}
-              image={post.imageUrl ?? "/fallback.jpg"}
-              description={post.description}
-               search={debouncedSearch} 
-            />
-          </Link>
-        ))}
-      </div>
+
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-6 px-6">
+  {visiblePosts.map((post: BlogItem) => (
+    <Link
+      key={post._id}
+      href={`/blog/${post._id}`}
+      className="w-full h-full"    
+    >
+      <BlogCard
+        title={post.title}
+        date={new Date(post.createdAt).toLocaleDateString()}
+        image={post.imageUrl ?? "/fallback.jpg"}
+        description={post.description}
+        search={debouncedSearch}
+      />
+    </Link>
+  ))}
+</div>
 
       {!usingSearch && (
         <Pagination

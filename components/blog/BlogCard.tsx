@@ -49,7 +49,10 @@ function highlight(text: string, search?: string) {
 
   return parts.map((part, i) =>
     regex.test(part) ? (
-      <mark key={i} className="bg-yellow-400/30 text-yellow-100 rounded px-0.5">
+      <mark
+        key={i}
+        className="text-primary-300 underline underline-offset-2 decoration-primary-500/70"
+      >
         {part}
       </mark>
     ) : (
@@ -69,31 +72,30 @@ const BlogCard = ({
   const snippet = buildSnippet(plainDescription, search ?? "", 140); // ~one line
 
   return (
-    <div className="flex flex-col h-full max-w-sm gap-4 p-4 rounded-xl glassmorphism group hover:border-primary/50 transition-all duration-300 transform hover:-translate-y-1">
+    <div className="flex flex-col h-full w-full gap-3 p-4 rounded-xl glassmorphism group hover:border-primary/50 transition-all duration-300 transform hover:-translate-y-1">
       <div className="w-full aspect-video rounded-lg overflow-hidden relative">
         <Image
           src={image}
           alt={title}
           fill
           sizes="(max-width: 640px) 100vw,
-          (max-width: 1024px) 50vw,
-          25vw"
+      (max-width: 1024px) 50vw,
+      25vw"
           loading="lazy"
           className="object-cover group-hover:scale-105 transition-transform duration-300"
         />
       </div>
 
-      <div>
-        <p className="text-white text-lg font-bold">
-          {highlight(title, search)}
+      <div className="mt-1 flex flex-col gap-1">
+        <p className="text-white text-base sm:text-lg font-semibold leading-snug line-clamp-2">
+          {highlight ? highlight(title, search) : title}
         </p>
 
-        {/* Short, clean snippet, not full HTML */}
-        <p className="text-[#a19db9] text-sm mt-1">
-          {highlight(snippet, search)}
+        <p className="text-[#a19db9] text-xs sm:text-sm leading-relaxed line-clamp-2">
+          {highlight ? highlight(snippet, search) : snippet}
         </p>
 
-        <p className="text-[#a19db9] text-xs mt-2">{date}</p>
+        <p className="text-[#7b7694] text-[11px] sm:text-xs mt-1">{date}</p>
       </div>
     </div>
   );
