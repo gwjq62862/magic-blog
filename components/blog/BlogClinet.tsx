@@ -33,10 +33,12 @@ type ListPage = {
   continueCursor: string | null;
 };
 
-// Props from the server component
+
 type Props = {
   initialPage: ListPage;
 };
+
+
 
 export default function BlogClient({ initialPage }: Props) {
   const [search, setSearch] = useState("");
@@ -44,25 +46,22 @@ export default function BlogClient({ initialPage }: Props) {
 
   const usingSearch = debouncedSearch.trim().length > 0;
 
-  // Client-side pagination for the non-search case
-  const { results, status, loadMore } = usePaginatedQuery(
-    api.blogPost.listPaginated,
-    { search: undefined },
-    { initialNumItems: 9 }
-  );
+const { results, status, loadMore } = usePaginatedQuery(
+  api.blogPost.listPaginated,
+  { search: debouncedSearch || undefined },
+  { initialNumItems: 9 }
+);
 
-  // For first render, use SSR data; after that, use hook results
-  const visiblePosts: BlogItem[] = usingSearch
-    ? [] // search handling can be added later
-    : results.length
+
+const visiblePosts: BlogItem[] =
+  results.length > 0 || (debouncedSearch && debouncedSearch.trim().length > 0)
     ? (results as BlogItem[])
     : initialPage.page;
-
   return (
     <main className="mt-12 sm:mt-16">
       <SearchInput value={search} onChange={setSearch} />
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
+           
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-6 items-stretch">
         {visiblePosts.map((post: BlogItem) => (
           <Link key={post._id} href={`/blog/${post._id}`}>
             <BlogCard
@@ -70,6 +69,7 @@ export default function BlogClient({ initialPage }: Props) {
               date={new Date(post.createdAt).toLocaleDateString()}
               image={post.imageUrl ?? "/fallback.jpg"}
               description={post.description}
+               search={debouncedSearch} 
             />
           </Link>
         ))}

@@ -9,6 +9,8 @@ import { X } from "lucide-react";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import { showToast } from "nextjs-toast-notify";
+import { useRouter } from "next/navigation";
 
 type BlogFormValues = {
   title: string;
@@ -16,6 +18,7 @@ type BlogFormValues = {
 };
 
 const CreateBlog = () => {
+  const router=useRouter()
   const {
     register,
     handleSubmit,
@@ -51,7 +54,7 @@ const CreateBlog = () => {
 
   const onSubmit = async (data: BlogFormValues) => {
     try {
-      let coverImageStorageId
+      let coverImageStorageId;
 
       if (coverFile) {
         // get short-lived upload URL from Convex
@@ -73,14 +76,14 @@ const CreateBlog = () => {
         coverImageStorageId = storageId as Id<"_storage">;
       }
 
-
       //create blog post in Convex
       await createBlogPost({
         title: data.title,
         description: data.description,
         coverImageStorageId,
       });
-
+      showToast.success("blog created successfully!");
+      router.push("/")
       reset();
       setCoverFile(null);
       setCoverPreview(null);

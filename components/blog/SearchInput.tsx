@@ -22,7 +22,7 @@ const SearchInput = ({ value, onChange }: Props) => {
           />
         </div>
       </label>
-      <CateogroyCard />
+ 
     </div>
   );
 };
