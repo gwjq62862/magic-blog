@@ -10,8 +10,8 @@ export default async function BlogDetailPage({
   params: Promise<{ id?: string }>;
 }) {
   const { id } = await params;
-    if (!id) {
-   return notFound();
+  if (!id) {
+    return notFound();
   }
   const post = await fetchQuery(api.blogPost.getById, {
     id: id as Id<"blogs">,
@@ -55,7 +55,7 @@ export default async function BlogDetailPage({
       </div>
 
       <article className="prose prose-invert max-w-none contain-content">
-        <div dangerouslySetInnerHTML={{ __html: post.description }} />
+        <div className="font-myanmar leading-myanmar tracking-myanmar" dangerouslySetInnerHTML={{ __html: post.description }} />
       </article>
     </main>
   );

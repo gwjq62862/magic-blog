@@ -1,18 +1,19 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Noto_Sans_Myanmar } from "next/font/google";
 import "./globals.css";
 
 import NavbarProvider from "@/components/ui/Navbar/NavbarProvider";
 import { ConvexClientProvider } from "./ConvexClientProvider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
   subsets: ["latin"],
+  variable: "--font-inter",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const myanmar = Noto_Sans_Myanmar({
+  subsets: ["myanmar"],
+  variable: "--font-myanmar",
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
@@ -27,7 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="font-display bg-(--color-bg-light) dark:bg-(--color-bg-dark) text-white">
+      <body className={`font-display bg-(--color-bg-light) dark:bg-(--color-bg-dark) text-white ${inter.variable} ${myanmar.variable}`}>
         <ConvexClientProvider>
           <NavbarProvider />
           {children}

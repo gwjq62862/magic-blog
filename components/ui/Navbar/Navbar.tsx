@@ -18,10 +18,7 @@ const navbarLinks = [
     title: "Blog",
     href: "/blog",
   },
-  {
-    title: "Dashboard", // Fixed capitalization
-    href: "/dashboard",
-  },
+ 
 ];
 
 const Navbar = () => {

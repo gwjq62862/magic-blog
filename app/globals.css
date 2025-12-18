@@ -5,7 +5,7 @@
 @plugin "@tailwindcss/typography";
 
 
-@import '../styles/_variables.scss'; 
+@import '../styles/_variables.scss';
 @import '../styles/_keyframe-animations.scss';
 
 
@@ -23,12 +23,37 @@
   --radius-lg: 0.5rem;
   --radius-xl: 0.75rem;
   --radius-full: 9999px;
+
+  --font-sans: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+
+  --font-myanmar: var(--font-myanmar), system-ui, sans-serif;
+
+  /* Myanmar typography tuning */
+  --line-height-myanmar: 1.9;
+  --letter-spacing-myanmar: 0.01em;
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 /* Glass + glow effects */
 .glow-effect {
   position: relative;
   overflow: hidden;
+}
+
+.prose {
+  font-family: var(--font-sans);
+}
+
+.prose :where(p, li, blockquote) {
+  font-family: var(--font-myanmar);
+  line-height: var(--line-height-myanmar);
+  letter-spacing: var(--letter-spacing-myanmar);
 }
 
 .glow-effect::before {
@@ -56,7 +81,8 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
   background: rgba(255, 255, 255, 0.1);
   color: white;
-  min-height: 250px;              /* consistent height */
+  min-height: 250px;
+  /* consistent height */
   transition: border-color 0.15s ease;
 }
 
@@ -138,24 +164,39 @@
     transform: translateX(100%);
   }
 }
+
 @layer utilities {
   .tiptap h1 {
     @apply text-3xl font-bold mb-3;
   }
+
   .tiptap h2 {
     @apply text-2xl font-semibold mt-6 mb-2;
   }
+
   .tiptap p {
     @apply mb-3 leading-relaxed;
   }
+
   .tiptap ul {
     @apply list-disc pl-6 mb-3;
   }
+
   .tiptap ol {
     @apply list-decimal pl-6 mb-3;
   }
 
- 
 
+  .font-myanmar {
+    font-family: var(--font-myanmar);
+  }
+
+  .leading-myanmar {
+    line-height: var(--line-height-myanmar);
+  }
+
+  .tracking-myanmar {
+    letter-spacing: var(--letter-spacing-myanmar);
+  }
 
 }

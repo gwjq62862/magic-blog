@@ -5,9 +5,16 @@ import React from "react";
 import Navbar from "./Navbar";
 
 const NavbarProvider = () => {
-  const pathName = usePathname();
-  const isAuthRoute = pathName === "/sign-in" || pathName === "/sign-up";
-  return isAuthRoute ? null : <Navbar />;
+  const pathname = usePathname();
+
+  const hideNavbar =
+    pathname.startsWith("/dashboard") ||
+    pathname === "/sign-in" ||
+    pathname === "/sign-up";
+
+  if (hideNavbar) return null;
+
+  return <Navbar />;
 };
 
 export default NavbarProvider;

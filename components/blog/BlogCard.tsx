@@ -1,4 +1,5 @@
 import Image from "next/image";
+
 type BlogCardProps = {
   title: string;
   date: string;
@@ -6,53 +7,26 @@ type BlogCardProps = {
   image: string;
   search?: string;
 };
+
 function stripHtml(html: string): string {
-  if (!html) return "";
   return html
     .replace(/<[^>]+>/g, " ")
     .replace(/\s+/g, " ")
     .trim();
 }
 
-function buildSnippet(text: string, query: string, maxLength = 160): string {
-  const trimmed = query.trim();
-  if (!trimmed) {
-    return text.slice(0, maxLength) + (text.length > maxLength ? "…" : "");
-  }
-
-  const lower = text.toLowerCase();
-  const q = trimmed.toLowerCase();
-  const idx = lower.indexOf(q);
-
-  // If no match, fall back to start
-  if (idx === -1) {
-    return text.slice(0, maxLength) + (text.length > maxLength ? "…" : "");
-  }
-
-  const context = Math.floor((maxLength - q.length) / 2);
-  const start = Math.max(0, idx - context);
-  const end = Math.min(text.length, start + maxLength);
-
-  let snippet = text.slice(start, end);
-  if (start > 0) snippet = "…" + snippet;
-  if (end < text.length) snippet = snippet + "…";
-  return snippet;
+function buildSnippet(text: string, maxLength = 120) {
+  return text.length > maxLength ? text.slice(0, maxLength) + "…" : text;
 }
-
 function highlight(text: string, search?: string) {
-  const trimmed = (search ?? "").trim();
-  if (!trimmed) return text;
+  if (!search?.trim()) return text;
 
-  const escaped = trimmed.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const escaped = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const regex = new RegExp(`(${escaped})`, "ig");
-  const parts = text.split(regex);
 
-  return parts.map((part, i) =>
+  return text.split(regex).map((part, i) =>
     regex.test(part) ? (
-      <mark
-        key={i}
-        className="text-primary-300 underline underline-offset-2 decoration-primary-500/70"
-      >
+      <mark key={i} className="bg-indigo-500/20 text-indigo-300 rounded px-0.5">
         {part}
       </mark>
     ) : (
@@ -60,44 +34,55 @@ function highlight(text: string, search?: string) {
     )
   );
 }
-
-const BlogCard = ({
-  title,
-  date,
-  description,
-  image,
-  search,
-}: BlogCardProps) => {
-  const plainDescription = stripHtml(description);
-  const snippet = buildSnippet(plainDescription, search ?? "", 140); // ~one line
+const BlogCard = ({ title, date, description, image,  search }: BlogCardProps) => {
+  const snippet = buildSnippet(stripHtml(description));
 
   return (
-    <div className="flex flex-col h-full w-full gap-3 p-4 rounded-xl glassmorphism group hover:border-primary/50 transition-all duration-300 transform hover:-translate-y-1">
-      <div className="w-full aspect-video rounded-lg overflow-hidden relative">
+    <article
+      className="
+        group relative flex flex-col overflow-hidden rounded-3xl
+        bg-[#0f172a]/90 backdrop-blur-xl
+        border border-white/10
+        shadow-2xl shadow-black/40
+        transition-all duration-300
+        hover:-translate-y-2 hover:shadow-indigo-500/30
+      "
+    >
+      {/* Hero Image */}
+      <div className="relative aspect-[16/10] overflow-hidden">
         <Image
           src={image}
           alt={title}
           fill
-          sizes="(max-width: 640px) 100vw,
-      (max-width: 1024px) 50vw,
-      25vw"
-          loading="lazy"
-          className="object-cover group-hover:scale-105 transition-transform duration-300"
+          sizes="(max-width: 1024px) 100vw, 50vw"
+          className="object-cover transition-transform duration-700 group-hover:scale-110"
         />
+
+        <div className="absolute inset-0 bg-linear-to-t from-black/85 via-black/30 to-transparent" />
+
+        {/* Date */}
+        <span className="absolute bottom-5 left-5 rounded-full bg-white/10 px-4 py-1.5 text-sm text-white backdrop-blur">
+          {date}
+        </span>
       </div>
 
-      <div className="mt-1 flex flex-col gap-1">
-        <p className="text-white text-base sm:text-lg font-semibold leading-snug line-clamp-2">
-          {highlight ? highlight(title, search) : title}
+      {/* Content */}
+      <div className="flex flex-col gap-5 p-8">
+        <h3 className="text-2xl md:text-3xl font-semibold text-white leading-tight font-myanmar leading-myanmar tracking-myanmar line-clamp-2">
+          {highlight(title, search)}
+        </h3>
+
+        <p className="text-base md:text-lg text-slate-400 font-myanmar leading-myanmar tracking-myanmar line-clamp-3">
+          {highlight(snippet, search)}
         </p>
 
-        <p className="text-[#a19db9] text-xs sm:text-sm leading-relaxed line-clamp-2">
-          {highlight ? highlight(snippet, search) : snippet}
-        </p>
-
-        <p className="text-[#7b7694] text-[11px] sm:text-xs mt-1">{date}</p>
+        <div className="mt-4">
+          <span className="inline-flex items-center rounded-full bg-indigo-500/15 px-4 py-1.5 text-sm font-medium text-indigo-300">
+            Knowledge Sharing
+          </span>
+        </div>
       </div>
-    </div>
+    </article>
   );
 };
 
