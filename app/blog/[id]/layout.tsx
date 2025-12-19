@@ -1,5 +1,8 @@
 "use client";
 
+import Button from "@/components/ui/Button";
+import { ArrowLeftSquare } from "lucide-react";
+import Link from "next/link";
 import React from "react";
 
 export default function ScrollProgressContainer({
@@ -16,11 +19,9 @@ export default function ScrollProgressContainer({
 
     const handleScroll = () => {
       const scrollTop = container.scrollTop;
-      const scrollHeight =
-        container.scrollHeight - container.clientHeight;
+      const scrollHeight = container.scrollHeight - container.clientHeight;
 
-      const scrolled =
-        scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+      const scrolled = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
 
       setScroll(scrolled);
     };
@@ -40,8 +41,13 @@ export default function ScrollProgressContainer({
       {/* Scrollable content */}
       <div
         ref={containerRef}
-        className="h-[calc(100vh-64px)] overflow-y-auto"
+        className="h-[calc(100vh-64px)] overflow-y-auto relative"
       >
+        <Link href={"/blog"} className="absolute left-4 top-5">
+          <Button size="sm" className="absolue left-4 top-2 ">
+            <ArrowLeftSquare className="mr-1.5" /> <span>Back</span>
+          </Button>
+        </Link>
         {children}
       </div>
     </div>

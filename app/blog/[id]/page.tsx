@@ -3,6 +3,56 @@ import Image from "next/image";
 import { api } from "@/convex/_generated/api";
 import { fetchQuery } from "convex/nextjs";
 import { Id } from "@/convex/_generated/dataModel";
+import { ReadMoreDescription } from "@/components/blog/ReadMoreDescription";
+import type { Metadata } from "next";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id?: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  if (!id) {
+    return {};
+  }
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_SITE_URL}/api/blog/${id}/metadata`,
+    {
+      cache: "no-store",
+    }
+  );
+
+  if (!res.ok) {
+    return {
+      title: "Magic Mind Blog",
+      description:
+        "Magic Mind Blog is a Burmese-language psychology and mental health blog.",
+    };
+  }
+
+  const data: {
+    title: string;
+    description: string;
+    image?: string | null;
+  } = await res.json();
+
+  return {
+    title: `${data.title} – Magic Mind Blog`,
+    description: data.description,
+    openGraph: {
+      title: `${data.title} – Magic Mind Blog`,
+      description: data.description,
+      type: "article",
+      images: data.image ? [{ url: data.image }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${data.title} – Magic Mind Blog`,
+      description: data.description,
+      images: data.image ? [data.image] : undefined,
+    },
+  };
+}
 
 export default async function BlogDetailPage({
   params,
@@ -17,7 +67,7 @@ export default async function BlogDetailPage({
     id: id as Id<"blogs">,
   });
 
-  if (!post) notFound();
+  if (!post) return notFound();
 
   return (
     <main className="mt-12 sm:mt-16 px-4 max-w-3xl mx-auto">
@@ -54,9 +104,7 @@ export default async function BlogDetailPage({
         )}
       </div>
 
-      <article className="prose prose-invert max-w-none contain-content">
-        <div className="font-myanmar leading-myanmar tracking-myanmar" dangerouslySetInnerHTML={{ __html: post.description }} />
-      </article>
+      <ReadMoreDescription blogId={id} html={post.description} />
     </main>
   );
 }

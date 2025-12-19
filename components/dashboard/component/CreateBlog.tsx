@@ -18,7 +18,7 @@ type BlogFormValues = {
 };
 
 const CreateBlog = () => {
-  const router=useRouter()
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -83,7 +83,7 @@ const CreateBlog = () => {
         coverImageStorageId,
       });
       showToast.success("blog created successfully!");
-      router.push("/blog")
+      router.push("/blog");
       reset();
       setCoverFile(null);
       setCoverPreview(null);
