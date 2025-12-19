@@ -129,3 +129,90 @@ export const getById = query({
     };
   },
 });
+
+
+export const deleteBlogPost = mutation({
+  args: { id: v.id("blogs") },
+  handler: async (ctx, args) => {
+    const user = await authComponent.safeGetAuthUser(ctx);
+    if (!user) throw new Error("Unauthorized");
+
+    const profile = await ctx.db
+      .query("profiles")
+      .withIndex("by_authUserId", q => q.eq("authUserId", user._id))
+      .unique();
+
+    if (!profile || profile.role !== "admin") {
+      throw new Error("You do not have permission to delete posts");
+    }
+
+    const blog = await ctx.db.get(args.id);
+    if (!blog) return;
+
+
+    const comments = await ctx.db
+      .query("comments")
+      .withIndex("by_blogId", q => q.eq("blogId", args.id))
+      .collect();
+
+    for (const comment of comments) {
+
+      const likes = await ctx.db
+        .query("commentLikes")
+        .withIndex("by_commentdId_and_profileId", q =>
+          q.eq("commentId", comment._id)
+        )
+        .collect();
+
+      for (const like of likes) {
+        await ctx.db.delete(like._id);
+      }
+
+
+      await ctx.db.delete(comment._id);
+    }
+
+
+    if (blog.coverImageStorageId) {
+      await ctx.storage.delete(blog.coverImageStorageId);
+    }
+
+
+    await ctx.db.delete(args.id);
+  },
+});
+
+
+export const updateBlogPost = mutation({
+  args: {
+    id: v.id("blogs"),
+    title: v.string(),
+    description: v.string(),
+    coverImageStorageId: v.optional(v.id("_storage")),
+  },
+  handler: async (ctx, args) => {
+    const userMetadata = await authComponent.safeGetAuthUser(ctx);
+    if (!userMetadata) throw new Error("Unauthorized");
+
+    const profile = await ctx.db
+      .query("profiles")
+      .withIndex("by_authUserId", q => q.eq("authUserId", userMetadata._id))
+      .unique();
+
+    if (!profile || profile.role !== "admin") {
+      throw new Error("You do not have permission to update posts");
+    }
+
+    const blog = await ctx.db.get(args.id);
+    if (!blog) throw new Error("Post not found");
+
+    const searchText = (args.title + " " + args.description).toLowerCase();
+
+    await ctx.db.patch(args.id, {
+      title: args.title,
+      description: args.description,
+      coverImageStorageId: args.coverImageStorageId ?? blog.coverImageStorageId,
+      searchText,
+    });
+  },
+});

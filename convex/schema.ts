@@ -27,6 +27,8 @@ export default defineSchema({
 
   }).index("by_blogId", {
     fields: ["blogId"],
+  }).index("by_parentCommentId", {
+    fields: ["parentCommentId"],
   }),
 
   commentLikes: defineTable({

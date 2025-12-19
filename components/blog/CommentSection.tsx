@@ -1,60 +1,51 @@
 "use client";
-import React from "react";
-import CreateComment from "./CreateComment";
+
+import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { usePaginatedQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { int } from "better-auth";
-import Pagination from "./Pagination";
+import { useEffect, useRef } from "react";
+import CreateComment from "./CreateComment";
+import CommentItem from "./CommentItem";
+
+const PAGE_SIZE = 5;
 
 const CommentSection = ({ blogId }: { blogId: Id<"blogs"> }) => {
   const {
-    loadMore,
-    status,
     results: comments,
+    status,
+    loadMore,
   } = usePaginatedQuery(
-    api.comment.getCommentByPostId,
+    api.comment.getCommentsWithAuthors,
     { blogId },
-    { initialNumItems: 5 }
+    { initialNumItems: PAGE_SIZE }
   );
+
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!loadMoreRef.current) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && status === "CanLoadMore") {
+        loadMore(PAGE_SIZE);
+      }
+    });
+
+    observer.observe(loadMoreRef.current);
+    return () => observer.disconnect();
+  }, [status, loadMore]);
+
   return (
-    <>
-      <div className="space-y-4 mt-6">
-        {comments.map((comment) => (
-          <div
-            key={comment._id}
-            className="max-w-2xl mx-auto rounded-xl border border-[#2a253d] bg-[#0f0e13]/90 px-4 py-4 shadow-md"
-          >
-            {/* Header */}
-            <div className="flex items-center mb-3">
-              <div className="mr-3 h-10 w-10 rounded-full bg-[#2a253d] flex items-center justify-center text-xs text-[#a19db9]">
-                MM
-              </div>
-              <div>
-                <p className="text-sm font-medium text-white">User</p>
-                <p className="text-xs text-[#7b7694]">
-                  {new Date(comment.createdAt).toLocaleString()}
-                </p>
-              </div>
-            </div>
+    <div className="mt-8 space-y-4">
+      {comments.map((comment) => (
+        <CommentItem key={comment._id} comment={comment} />
+      ))}
 
-            {/* Body */}
-            <p className="text-sm text-[#d2cfec] font-myanmar">
-              {comment.text}
-            </p>
-          </div>
-        ))}
-      </div>
-
-      {/* Pagination */}
-      <Pagination
-        canLoadMore={status === "CanLoadMore"}
-        loading={status === "LoadingMore"}
-        onNext={() => loadMore(5)}
-      />
+      {/* Infinite scroll trigger */}
+      <div ref={loadMoreRef} className="h-10" />
 
       <CreateComment blogId={blogId} />
-    </>
+    </div>
   );
 };
 

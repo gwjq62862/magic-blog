@@ -4,44 +4,81 @@ import { authComponent } from "./auth";
 import { paginationOptsValidator } from "convex/server";
 
 export const createComment = mutation({
-    args: {
-        blogId: v.id("blogs"),
-       
-        text: v.string(),
-        parentCommentId: v.optional(v.id("comments")),
-    },
-    handler: async (ctx, args) => {
-        const user = await authComponent.safeGetAuthUser(ctx);
-        if (!user) throw new Error("Unauthorized");
-        const profile = await ctx.db.query("profiles").withIndex("by_authUserId", q => q.eq("authUserId", user._id)).unique();
-        if (!profile) throw new Error("No profile found for user");
-        const comment = await ctx.db.insert("comments", {
-            blogId: args.blogId,
-            authorId: profile._id,
-            text: args.text,
-            createdAt: Date.now(),
-            likesCount: 0,
-            parentCommentId: args.parentCommentId ?? undefined,
-        })
-        return comment
-    }
+  args: {
+    blogId: v.id("blogs"),
+
+    text: v.string(),
+    parentCommentId: v.optional(v.id("comments")),
+  },
+  handler: async (ctx, args) => {
+    const user = await authComponent.safeGetAuthUser(ctx);
+    if (!user) throw new Error("Unauthorized");
+    const profile = await ctx.db.query("profiles").withIndex("by_authUserId", q => q.eq("authUserId", user._id)).unique();
+    if (!profile) throw new Error("No profile found for user");
+    const comment = await ctx.db.insert("comments", {
+      blogId: args.blogId,
+      authorId: profile._id,
+      text: args.text,
+      createdAt: Date.now(),
+      likesCount: 0,
+      parentCommentId: args.parentCommentId ?? undefined,
+    })
+    return comment
+  }
 })
 
-export const getCommentByPostId = query({
-    args: {
-        blogId: v.id("blogs"),
-        paginationOpts: paginationOptsValidator,
-    },
-    handler: async (ctx, args) => {
-        const results = await ctx.db
-            .query("comments")
-            .withIndex("by_blogId", q => q.eq("blogId", args.blogId))
-            .order("desc")
-            .paginate(args.paginationOpts);
-
-        return results;
+export const getCommentsWithAuthors = query({
+  args: {
+    blogId: v.id("blogs"),
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, args) => {
+    const user = await authComponent.safeGetAuthUser(ctx);
+    let profile = null;
+    if (user) {
+      profile = await ctx.db
+        .query("profiles")
+        .withIndex("by_authUserId", q => q.eq("authUserId", user._id))
+        .unique();
     }
-})
+
+    const results = await ctx.db
+      .query("comments")
+      .withIndex("by_blogId", q => q.eq("blogId", args.blogId))
+      .order("desc")
+      .paginate(args.paginationOpts);
+
+    const commentsWithAuthors = await Promise.all(
+      results.page.map(async comment => {
+        const author = await ctx.db.get(comment.authorId);
+
+        // Check if current user liked this comment
+        let likedByMe = false;
+        if (profile) {
+          const existingLike = await ctx.db
+            .query("commentLikes")
+            .withIndex("by_commentdId_and_profileId", q =>
+              q.eq("commentId", comment._id).eq("profileId", profile._id)
+            )
+            .unique();
+          likedByMe = !!existingLike;
+        }
+
+        return {
+          ...comment,
+          author,
+          likedByMe,
+        };
+      })
+    );
+
+    return {
+      ...results,
+      page: commentsWithAuthors,
+    };
+  },
+});
+
 
 export const likeComment = mutation({
   args: {
@@ -92,6 +129,20 @@ export const likeComment = mutation({
 });
 
 
+export const getReplies = query({
+  args: {
+    parentCommentId: v.id("comments"),
+  },
+  handler: async (ctx, args) => {
+    return ctx.db
+      .query("comments")
+      .withIndex("by_parentCommentId", q =>
+        q.eq("parentCommentId", args.parentCommentId)
+      )
+      .order("asc")
+      .collect();
+  },
+});
 
 
 

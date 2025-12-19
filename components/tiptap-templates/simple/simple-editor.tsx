@@ -228,6 +228,17 @@ export function SimpleEditor({ initialContent, onChange }: SimpleEditorProps) {
       onChange(html);
     },
   });
+useEffect(() => {
+  if (!editor) return;
+  if (!initialContent) return;
+
+  const currentHTML = editor.getHTML();
+  if (currentHTML === initialContent) return;
+
+  editor.commands.setContent(initialContent, {
+    emitUpdate: false,
+  });
+}, [editor, initialContent]);
 
   const rect = useCursorVisibility({
     editor,
