@@ -40,10 +40,8 @@ const Navbar = () => {
     try {
       await authClient.signOut();
 
-      // redirect
       router.push("/sign-in");
 
-      //  force refresh user state
       router.refresh();
     } catch (err) {
       console.error("Logout failed", err);
@@ -51,7 +49,6 @@ const Navbar = () => {
   };
   return (
     <header className="flex items-center justify-between whitespace-nowrap px-4 sm:px-6 py-4 glassmorphism rounded-xl relative z-50">
-      {/* 1. Left: Logo */}
       <div className="flex items-center gap-10 text-white shrink-0">
         <Link className="flex items-center gap-3" href="/">
           <div className="size-6 text-primary">
@@ -72,12 +69,13 @@ const Navbar = () => {
         </Link>
       </div>
 
-      {/* 2. Center: Navigation Links (Absolute centered or Flex centered) */}
-      {/* Used absolute positioning for perfect center, falling back to hidden on mobile */}
       <div className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
         <nav className="flex items-center gap-1 bg-white/5 rounded-full px-2 py-1 border border-white/10 shadow-sm">
           {navbarLinks.map((item) => {
-            const isActive = pathName === item.href;
+            const isActive =
+              item.href === "/blog"
+                ? pathName === "/blog" || pathName.startsWith("/blog/")
+                : pathName === item.href;
             return (
               <Link
                 key={item.title}
@@ -98,7 +96,6 @@ const Navbar = () => {
         </nav>
       </div>
 
-      {/* 3. Right: Actions */}
       <div className="flex gap-3 items-center justify-end">
         <AuthLoading>
           <div className="hidden md:block">
@@ -130,7 +127,7 @@ const Navbar = () => {
         </Unauthenticated>
         <Authenticated>
           {isAdmin && (
-            <Link href="/dashboard">
+            <Link href="/dashboard" className="hidden lg:block">
               <Button
                 size="sm"
                 className="px-4 rounded-full font-semibold"
@@ -146,7 +143,6 @@ const Navbar = () => {
             Logout
           </Button>
         </Authenticated>
-        {/* Mobile menu trigger */}
         <MobileNavbar navbarLinks={navbarLinks} />
       </div>
     </header>

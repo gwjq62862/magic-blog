@@ -1,4 +1,3 @@
-// convex/users.ts
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { authComponent } from "./auth";
@@ -6,7 +5,7 @@ import { authComponent } from "./auth";
 
 export const ensureUserProfile = mutation({
   args: {
-    authUserId: v.string(), // matches schema
+    authUserId: v.string(),
     name: v.string(),
   },
   handler: async (ctx, args) => {
@@ -46,7 +45,6 @@ export const updateUserRole = mutation({
     role: v.union(v.literal("user"), v.literal("admin")),
   },
   handler: async (ctx, { profileId, role }) => {
-    // 1) Who is making this change?
     const authUser = await authComponent.safeGetAuthUser(ctx);
     if (!authUser) {
       throw new Error("Unauthorized");
@@ -61,7 +59,6 @@ export const updateUserRole = mutation({
       throw new Error("You do not have permission to change roles");
     }
 
-    // 2) Update target user
     const existing = await ctx.db.get(profileId);
     if (!existing) {
       throw new Error("Profile not found");

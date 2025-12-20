@@ -1,4 +1,3 @@
-// convex/schema.ts
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
@@ -6,10 +5,9 @@ export default defineSchema({
   blogs: defineTable({
     title: v.string(),
     description: v.string(),
-    // combined lowercased text for search
     searchText: v.string(),
     coverImageStorageId: v.optional(v.id("_storage")),
-    authorId: v.string(), // Better Auth user _id as string
+    authorId: v.string(),
     createdAt: v.number(),
   }).searchIndex("search_text", {
     searchField: "searchText",
@@ -21,7 +19,7 @@ export default defineSchema({
     authorId: v.id("profiles"),
     text: v.string(),
     createdAt: v.number(),
-    likesCount: v.number(), // default 0 in  mutation
+    likesCount: v.number(),
 
     parentCommentId: v.optional(v.id("comments")),
 
@@ -44,7 +42,7 @@ export default defineSchema({
     authUserId: v.string(),
     name: v.string(),
     profileImage: v.string(),
-    role: v.string(),          // "user", "admin", etc.
+    role: v.string(),
     createdAt: v.float64(),
   }).index("by_authUserId", {
     fields: ["authUserId"],

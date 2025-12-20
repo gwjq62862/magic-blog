@@ -12,14 +12,12 @@ export default function Layout({ children }: LayoutProps) {
   const { isAuthenticated, isLoading } = useConvexAuth();
   const router = useRouter();
 
-  // Redirect authenticated users away from auth pages
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
-      router.replace("/"); // home page
+      router.replace("/");
     }
   }, [isLoading, isAuthenticated, router]);
 
-  // While checking auth, or while redirecting, we can show a loader
   if (isLoading || isAuthenticated) {
     return (
       <div className="position absolute inset-0">
@@ -28,7 +26,6 @@ export default function Layout({ children }: LayoutProps) {
     );
   }
 
-  // Not authenticated: render sign-in / sign-up children
   return (
     <div className="relative flex min-h-screen w-full flex-col items-center justify-center bg-background-dark text-white overflow-hidden p-4 sm:p-6 lg:p-8">
       <div className="absolute top-0 -left-1/4 w-96 h-96 bg-primary/20 rounded-full mix-blend-screen blur-3xl opacity-50 animate-blob"></div>

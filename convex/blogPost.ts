@@ -1,16 +1,11 @@
-// convex/blogs.ts
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { authComponent } from "./auth";
 import { paginationOptsValidator } from "convex/server";
 import { Doc } from "./_generated/dataModel";
-
-
-// 1) Generate upload URL
 export const generateCoverUploadUrl = mutation({
   args: {},
   handler: async (ctx) => {
-    // check auth here only logged-in users to upload
     const user = await authComponent.safeGetAuthUser(ctx);
     if (!user) throw new Error("Unauthorized");
     return await ctx.storage.generateUploadUrl();
@@ -44,7 +39,6 @@ export const createBlogPost = mutation({
       throw new Error("No profile found for user");
     }
 
-    // 2) Check role 
     if (profile.role !== "admin") {
 
       throw new Error("You do not have permission to create posts");
@@ -76,7 +70,6 @@ export const listPaginated = query({
     let page;
 
     if (trimmed && trimmed.length > 0) {
-      //  search-index-based query, then .paginate(...)
       page = await ctx.db
         .query("blogs")
         .withSearchIndex("search_text", (q) =>
@@ -115,7 +108,6 @@ export const getById = query({
     const blog = await ctx.db.get(id);
     if (!blog) return null;
 
-    // storing image in storage:
     const imageUrl = blog.coverImageStorageId
       ? await ctx.storage.getUrl(blog.coverImageStorageId)
       : null;

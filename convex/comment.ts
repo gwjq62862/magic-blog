@@ -46,7 +46,7 @@ export const getCommentsWithAuthors = query({
     const result = await ctx.db
       .query("comments")
       .withIndex("by_blogId", q => q.eq("blogId", blogId))
-      .filter(q => q.eq(q.field("parentCommentId"), undefined)) // top-level only
+      .filter(q => q.eq(q.field("parentCommentId"), undefined))
       .order("desc")
       .paginate(paginationOpts);
 
@@ -107,7 +107,6 @@ export const likeComment = mutation({
       .unique();
 
     if (existingLike) {
-      // Unlike
       await ctx.db.delete(existingLike._id);
       await ctx.db.patch(args.commentId, {
         likesCount: Math.max((comment.likesCount ?? 0) - 1, 0),
@@ -115,7 +114,6 @@ export const likeComment = mutation({
       return { liked: false };
     }
 
-    // Like
     await ctx.db.insert("commentLikes", {
       commentId: args.commentId,
       profileId: profile._id,
@@ -157,7 +155,6 @@ export const getReplies = query({
       replies.map(async reply => {
         const author = await ctx.db.get(reply.authorId);
 
-        // Check if current user liked this reply
         let likedByMe = false;
         if (profile) {
           const profileId = profile._id;

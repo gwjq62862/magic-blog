@@ -32,26 +32,22 @@ type Props = {
 export default async function DashboardLayout({ children }: Props) {
   const token = await getToken();
 
-  // 2. Pass it as the third argument to fetchQuery
   const me = await fetchQuery(
     api.user.getCurrentUserWithProfile,
     {},
     { token }
   );
 
-  // 3. Protect the route
   if (!me || !me.user) {
     redirect("/sign-in");
   }
 
   if (me.profile?.role !== "admin") {
-    redirect("/"); // or a 403 page
+    redirect("/");
   }
 
   return (
     <div className="min-h-screen bg-linear-to-br from-[#0f0e13] to-[#1a1622] flex flex-col">
-      {/* Pass me to sidebar */}
-
       <DashboardHeader me={me as { user: AuthUser; profile: UserProfile }} />
       <div className="flex flex-1 overflow-hidden">
         <DashboardSidebar />

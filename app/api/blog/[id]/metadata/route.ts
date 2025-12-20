@@ -3,7 +3,6 @@ import { fetchQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 
-// Cache metadata for 5 minutes
 export const revalidate = 300;
 
 export async function GET(

@@ -6,21 +6,18 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'lh3.googleusercontent.com',
-        
+
       }, {
         protocol: 'https',
         hostname: 'dynamic-orca-64.convex.cloud',
-        
-      },{
+
+      }, {
         protocol: 'https',
         hostname: 'avatar.iran.liara.run',
-        
+
       },
     ],
   },
-
-
 };
 
-//dynamic-orca-64.convex.cloud
 export default nextConfig;

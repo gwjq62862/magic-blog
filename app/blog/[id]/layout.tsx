@@ -11,41 +11,41 @@ export default function ScrollProgressContainer({
   children: React.ReactNode;
 }) {
   const [scroll, setScroll] = React.useState(0);
-  const containerRef = React.useRef<HTMLDivElement | null>(null);
 
   React.useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
     const handleScroll = () => {
-      const scrollTop = container.scrollTop;
-      const scrollHeight = container.scrollHeight - container.clientHeight;
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const scrollHeight =
+        document.documentElement.scrollHeight -
+        document.documentElement.clientHeight;
 
       const scrolled = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
 
       setScroll(scrolled);
     };
 
-    container.addEventListener("scroll", handleScroll);
-    return () => container.removeEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
     <div className="relative">
-      {/* Progress bar */}
       <div
         className="fixed top-0 left-0 h-1.5 z-50 bg-indigo-600 transition-all duration-200"
         style={{ width: `${scroll}%` }}
       />
 
-      {/* Scrollable content */}
-      <div
-        ref={containerRef}
-        className="h-[calc(100vh-64px)] overflow-y-auto relative"
-      >
-        <Link href={"/blog"} className="absolute left-4 top-5">
-          <Button size="sm" className="absolue left-4 top-2 ">
-            <ArrowLeftSquare className="mr-1.5" /> <span>Back</span>
+      <div className="relative">
+        <Link
+          href={"/blog"}
+          className="fixed sm:absolute left-3 sm:left-4 top-20 sm:top-2 z-10"
+        >
+          <Button
+            size="sm"
+            className="px-2.5 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm h-8 sm:h-8"
+          >
+            <ArrowLeftSquare className="mr-1 sm:mr-1.5 size-4 sm:size-5" />
+            <span className="hidden sm:inline">Back</span>
           </Button>
         </Link>
         {children}

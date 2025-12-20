@@ -6,8 +6,7 @@ import { Id } from "@/convex/_generated/dataModel";
 import { ReadMoreDescription } from "@/components/blog/ReadMoreDescription";
 import type { Metadata } from "next";
 
-// Enable static generation with revalidation
-export const revalidate = 300; // Revalidate every 5 minutes
+export const revalidate = 300;
 
 export async function generateMetadata({
   params,
@@ -19,7 +18,6 @@ export async function generateMetadata({
     return {};
   }
 
-  // Try to fetch metadata directly from Convex instead of API route for better performance
   try {
     const post = await fetchQuery(api.blogPost.getById, {
       id: id as Id<"blogs">,
@@ -54,12 +52,11 @@ export async function generateMetadata({
       },
     };
   } catch (error) {
-    // Fallback to API route if direct fetch fails
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/api/blog/${id}/metadata`,
         {
-          next: { revalidate: 300 }, // Cache for 5 minutes
+          next: { revalidate: 300 },
         }
       );
 
@@ -119,7 +116,7 @@ export default async function BlogDetailPage({
   if (!post) return notFound();
 
   return (
-    <main className="mt-12 sm:mt-16 px-4 max-w-3xl mx-auto">
+    <main className="mt-20 sm:mt-16 px-4 max-w-3xl mx-auto">
       {post.imageUrl && (
         <div className="w-full aspect-video relative rounded-xl overflow-hidden mb-6">
           <Image

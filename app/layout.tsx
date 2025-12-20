@@ -45,7 +45,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`font-display bg-(--color-bg-light) dark:bg-(--color-bg-dark) text-white ${inter.variable} ${myanmar.variable}`}
+        className={`font-display bg-(--color-bg-light) dark:bg-(--color-bg-dark) text-white ${inter.variable} ${myanmar.variable} [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]`}
       >
         <ConvexClientProvider>
           <NavbarProvider />

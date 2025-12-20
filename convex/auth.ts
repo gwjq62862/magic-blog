@@ -7,7 +7,6 @@ import { betterAuth } from "better-auth";
 
 const siteUrl = process.env.SITE_URL!;
 
-// Component client: Convex <-> Better Auth
 export const authComponent = createClient<DataModel>(components.betterAuth);
 
 export const createAuth = (
@@ -18,19 +17,18 @@ export const createAuth = (
     logger: { disabled: optionsOnly },
     baseURL: siteUrl,
     database: authComponent.adapter(ctx),
-   
+
 
     emailAndPassword: {
       enabled: true,
       requireEmailVerification: false,
     },
     plugins: [
-      convex(), // required for Convex compatibility
+      convex(),
     ],
   });
 };
 
-// Optional helper to get current user
 export const getCurrentUser = query({
   args: {},
   handler: async (ctx) => {

@@ -28,12 +28,10 @@ const MobileNavbar = ({ navbarLinks }: NavbarLinkProps) => {
   const currentUser = useQuery(api.user.getCurrentUserWithProfile);
   const isAdmin = currentUser?.profile?.role === "admin";
 
-  // Ensure component is mounted (client-side only)
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Prevent body scroll when menu is open
   useEffect(() => {
     if (open) {
       document.body.style.overflow = "hidden";
@@ -63,15 +61,12 @@ const MobileNavbar = ({ navbarLinks }: NavbarLinkProps) => {
   const overlayContent =
     open && mounted ? (
       <>
-        {/* Backdrop */}
         <div
           className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] animate-fadeIn"
           onClick={() => setOpen(false)}
         />
 
-        {/* Full Screen Menu */}
         <div className="fixed inset-0 z-[101] flex flex-col bg-gradient-to-br from-[#0f0e13] via-[#1a1622] to-[#0f0e13] overflow-y-auto">
-          {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-white/10">
             <div className="flex items-center gap-3">
               <div className="size-8 text-primary">
@@ -97,12 +92,13 @@ const MobileNavbar = ({ navbarLinks }: NavbarLinkProps) => {
             </button>
           </div>
 
-          {/* Navigation Content */}
           <div className="flex-1 flex flex-col justify-center px-6 py-12 space-y-6">
-            {/* Main Navigation Links */}
             <nav className="space-y-4">
               {navbarLinks.map((item) => {
-                const isActive = pathName === item.href;
+                const isActive =
+                  item.href === "/blog"
+                    ? pathName === "/blog" || pathName.startsWith("/blog/")
+                    : pathName === item.href;
                 return (
                   <Link
                     key={item.href}
@@ -121,13 +117,10 @@ const MobileNavbar = ({ navbarLinks }: NavbarLinkProps) => {
               })}
             </nav>
 
-            {/* Divider */}
             <div className="border-t border-white/10 my-4" />
 
-            {/* Authentication Section */}
             <div className="space-y-4">
               <Authenticated>
-                {/* Dashboard for Admin */}
                 {isAdmin && (
                   <Link
                     href="/dashboard"
@@ -144,7 +137,6 @@ const MobileNavbar = ({ navbarLinks }: NavbarLinkProps) => {
                   </Link>
                 )}
 
-                {/* Logout Button */}
                 <button
                   onClick={handleLogout}
                   className="w-full flex items-center gap-3 px-6 py-4 rounded-xl text-lg font-medium text-white/80 hover:text-white hover:bg-white/5 transition-all duration-300"
@@ -155,7 +147,6 @@ const MobileNavbar = ({ navbarLinks }: NavbarLinkProps) => {
               </Authenticated>
 
               <Unauthenticated>
-                {/* Sign In */}
                 <Link
                   href="/sign-in"
                   onClick={handleLinkClick}
@@ -165,7 +156,6 @@ const MobileNavbar = ({ navbarLinks }: NavbarLinkProps) => {
                   Sign In
                 </Link>
 
-                {/* Sign Up */}
                 <Link
                   href="/sign-up"
                   onClick={handleLinkClick}
@@ -183,7 +173,6 @@ const MobileNavbar = ({ navbarLinks }: NavbarLinkProps) => {
 
   return (
     <>
-      {/* Hamburger Button */}
       <button
         onClick={() => setOpen(!open)}
         className="md:hidden p-2 rounded-lg text-white hover:bg-white/10 transition relative z-[60]"
@@ -192,7 +181,6 @@ const MobileNavbar = ({ navbarLinks }: NavbarLinkProps) => {
         {open ? <X size={24} /> : <Menu size={24} />}
       </button>
 
-      {/* Full Screen Overlay - Rendered via Portal to body */}
       {mounted && overlayContent && createPortal(overlayContent, document.body)}
     </>
   );

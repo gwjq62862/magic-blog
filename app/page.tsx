@@ -4,8 +4,7 @@ import Footer from "@/components/home/Footer";
 import Hero from "@/components/home/Hero";
 import React from "react";
 
-// Enable static generation with revalidation
-export const revalidate = 3600; // Revalidate every hour (home page changes less frequently)
+export const revalidate = 3600;
 
 const page = () => {
   return (
