@@ -4,7 +4,7 @@ import "./globals.css";
 
 import NavbarProvider from "@/components/ui/Navbar/NavbarProvider";
 import { ConvexClientProvider } from "./ConvexClientProvider";
-
+import { SpeedInsights } from '@vercel/speed-insights/next';
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
@@ -50,6 +50,7 @@ export default function RootLayout({
         <ConvexClientProvider>
           <NavbarProvider />
           {children}
+          <SpeedInsights/>
         </ConvexClientProvider>
       </body>
     </html>
