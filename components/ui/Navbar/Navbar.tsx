@@ -2,12 +2,18 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import React from "react";
-import MobileNavbar from "./MobileNavbar"; 
+import MobileNavbar from "./MobileNavbar";
 import Button from "../Button";
-import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
-import { ArrowLeftSquare, Plus } from "lucide-react";
+import {
+  Authenticated,
+  AuthLoading,
+  Unauthenticated,
+  useQuery,
+} from "convex/react";
+import { ArrowLeftSquare, Plus, LayoutDashboard } from "lucide-react";
 import NavbarSkeleton from "./NavbarSkelton";
 import { authClient } from "@/lib/auth-client";
+import { api } from "@/convex/_generated/api";
 
 const navbarLinks = [
   {
@@ -26,12 +32,13 @@ const navbarLinks = [
 
 const Navbar = () => {
   const pathName = usePathname();
-  const router=useRouter()
- const handleLogout = async () => {
+  const router = useRouter();
+  const currentUser = useQuery(api.user.getCurrentUserWithProfile);
+  const isAdmin = currentUser?.profile?.role === "admin";
+
+  const handleLogout = async () => {
     try {
-    
-       await authClient.signOut();       
-    
+      await authClient.signOut();
 
       // redirect
       router.push("/sign-in");
@@ -122,15 +129,25 @@ const Navbar = () => {
           </Link>
         </Unauthenticated>
         <Authenticated>
+          {isAdmin && (
+            <Link href="/dashboard">
+              <Button
+                size="sm"
+                className="px-4 rounded-full font-semibold"
+                color="primary"
+              >
+                <LayoutDashboard className="mr-2 size-4" />
+                Dashboard
+              </Button>
+            </Link>
+          )}
           <Button onClick={handleLogout}>
             <ArrowLeftSquare className="mr-2" />
             Logout
           </Button>
         </Authenticated>
-        {/* Mobile menu trigger usually goes here */}
-        <div className="md:hidden">
-          <MobileNavbar navbarLinks={navbarLinks} />
-        </div>
+        {/* Mobile menu trigger */}
+        <MobileNavbar navbarLinks={navbarLinks} />
       </div>
     </header>
   );
