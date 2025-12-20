@@ -3,6 +3,9 @@ import { fetchQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 
+// Cache metadata for 5 minutes
+export const revalidate = 300;
+
 export async function GET(
   _req: Request,
   { params }: { params: Promise<{ id?: string }> }
@@ -21,11 +24,18 @@ export async function GET(
     const short =
       plain.length > 150 ? plain.slice(0, 150).trimEnd() + "…" : plain;
 
-    return NextResponse.json({
-      title: post.title,
-      description: short,
-      image: post.imageUrl ?? null,
-    });
+    return NextResponse.json(
+      {
+        title: post.title,
+        description: short,
+        image: post.imageUrl ?? null,
+      },
+      {
+        headers: {
+          'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+        },
+      }
+    );
   } catch (err) {
     return NextResponse.json(null, { status: 500 });
   }

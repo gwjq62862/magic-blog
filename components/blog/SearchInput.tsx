@@ -1,6 +1,6 @@
 import { Search } from "lucide-react";
 import React from "react";
-import CateogroyCard from "./CateogroyCard";
+
 type Props = {
   value: string;
   onChange: (v: string) => void;

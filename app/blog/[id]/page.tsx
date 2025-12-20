@@ -6,6 +6,9 @@ import { Id } from "@/convex/_generated/dataModel";
 import { ReadMoreDescription } from "@/components/blog/ReadMoreDescription";
 import type { Metadata } from "next";
 
+// Enable static generation with revalidation
+export const revalidate = 300; // Revalidate every 5 minutes
+
 export async function generateMetadata({
   params,
 }: {
@@ -15,43 +18,89 @@ export async function generateMetadata({
   if (!id) {
     return {};
   }
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_SITE_URL}/api/blog/${id}/metadata`,
-    {
-      cache: "no-store",
+
+  // Try to fetch metadata directly from Convex instead of API route for better performance
+  try {
+    const post = await fetchQuery(api.blogPost.getById, {
+      id: id as Id<"blogs">,
+    });
+
+    if (!post) {
+      return {
+        title: "Magic Mind Blog",
+        description:
+          "Magic Mind Blog is a Burmese-language psychology and mental health blog.",
+      };
     }
-  );
 
-  if (!res.ok) {
+    const plain = post.description.replace(/<[^>]+>/g, "");
+    const short =
+      plain.length > 150 ? plain.slice(0, 150).trimEnd() + "…" : plain;
+
     return {
-      title: "Magic Mind Blog",
-      description:
-        "Magic Mind Blog is a Burmese-language psychology and mental health blog.",
+      title: `${post.title} – Magic Mind Blog`,
+      description: short,
+      openGraph: {
+        title: `${post.title} – Magic Mind Blog`,
+        description: short,
+        type: "article",
+        images: post.imageUrl ? [{ url: post.imageUrl }] : undefined,
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: `${post.title} – Magic Mind Blog`,
+        description: short,
+        images: post.imageUrl ? [post.imageUrl] : undefined,
+      },
     };
+  } catch (error) {
+    // Fallback to API route if direct fetch fails
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/api/blog/${id}/metadata`,
+        {
+          next: { revalidate: 300 }, // Cache for 5 minutes
+        }
+      );
+
+      if (!res.ok) {
+        return {
+          title: "Magic Mind Blog",
+          description:
+            "Magic Mind Blog is a Burmese-language psychology and mental health blog.",
+        };
+      }
+
+      const data: {
+        title: string;
+        description: string;
+        image?: string | null;
+      } = await res.json();
+
+      return {
+        title: `${data.title} – Magic Mind Blog`,
+        description: data.description,
+        openGraph: {
+          title: `${data.title} – Magic Mind Blog`,
+          description: data.description,
+          type: "article",
+          images: data.image ? [{ url: data.image }] : undefined,
+        },
+        twitter: {
+          card: "summary_large_image",
+          title: `${data.title} – Magic Mind Blog`,
+          description: data.description,
+          images: data.image ? [data.image] : undefined,
+        },
+      };
+    } catch {
+      return {
+        title: "Magic Mind Blog",
+        description:
+          "Magic Mind Blog is a Burmese-language psychology and mental health blog.",
+      };
+    }
   }
-
-  const data: {
-    title: string;
-    description: string;
-    image?: string | null;
-  } = await res.json();
-
-  return {
-    title: `${data.title} – Magic Mind Blog`,
-    description: data.description,
-    openGraph: {
-      title: `${data.title} – Magic Mind Blog`,
-      description: data.description,
-      type: "article",
-      images: data.image ? [{ url: data.image }] : undefined,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: `${data.title} – Magic Mind Blog`,
-      description: data.description,
-      images: data.image ? [data.image] : undefined,
-    },
-  };
 }
 
 export default async function BlogDetailPage({
@@ -104,7 +153,7 @@ export default async function BlogDetailPage({
         )}
       </div>
 
-      <ReadMoreDescription blogId={id} html={post.description} />
+      <ReadMoreDescription blogId={id as Id<"blogs">} html={post.description} />
     </main>
   );
 }

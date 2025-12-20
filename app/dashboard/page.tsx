@@ -5,6 +5,9 @@ import { api } from "@/convex/_generated/api";
 import Link from "next/link";
 import { Id } from "@/convex/_generated/dataModel";
 
+// Dashboard pages must be dynamic due to authentication requirements
+export const dynamic = "force-dynamic";
+
 export default function DashboardPage() {
   const blogs = useQuery(api.blogPost.listPaginated, {
     search: undefined,

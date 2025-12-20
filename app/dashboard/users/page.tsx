@@ -4,6 +4,9 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import Image from "next/image";
 
+// Dashboard pages must be dynamic due to authentication requirements
+export const dynamic = "force-dynamic";
+
 export default function UsersPage() {
   const profiles = useQuery(api.user.listProfiles);
   const updateRole = useMutation(api.user.updateUserRole);
@@ -37,9 +40,7 @@ export default function UsersPage() {
               </div>
 
               <div>
-                <p className="text-sm font-medium text-white">
-                  {user.name}
-                </p>
+                <p className="text-sm font-medium text-white">{user.name}</p>
                 <p className="text-xs text-[#7b7694] mt-1">
                   {new Date(user._creationTime).toLocaleDateString()}
                 </p>
