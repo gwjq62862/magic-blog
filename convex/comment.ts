@@ -32,9 +32,10 @@ export const getCommentsWithAuthors = query({
     blogId: v.id("blogs"),
     paginationOpts: paginationOptsValidator,
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, { blogId, paginationOpts }) => {
     const user = await authComponent.safeGetAuthUser(ctx);
-    let profile = null;
+
+    let profile: { _id: any } | null = null;
     if (user) {
       profile = await ctx.db
         .query("profiles")
@@ -42,23 +43,23 @@ export const getCommentsWithAuthors = query({
         .unique();
     }
 
-    const results = await ctx.db
+    const result = await ctx.db
       .query("comments")
-      .withIndex("by_blogId", q => q.eq("blogId", args.blogId))
+      .withIndex("by_blogId", q => q.eq("blogId", blogId))
+      .filter(q => q.eq(q.field("parentCommentId"), undefined)) // top-level only
       .order("desc")
-      .paginate(args.paginationOpts);
+      .paginate(paginationOpts);
 
-    const commentsWithAuthors = await Promise.all(
-      results.page.map(async comment => {
+    const pageWithAuthors = await Promise.all(
+      result.page.map(async comment => {
         const author = await ctx.db.get(comment.authorId);
 
-        // Check if current user liked this comment
         let likedByMe = false;
         if (profile) {
           const existingLike = await ctx.db
             .query("commentLikes")
             .withIndex("by_commentdId_and_profileId", q =>
-              q.eq("commentId", comment._id).eq("profileId", profile._id)
+              q.eq("commentId", comment._id).eq("profileId", profile!._id)
             )
             .unique();
           likedByMe = !!existingLike;
@@ -73,11 +74,12 @@ export const getCommentsWithAuthors = query({
     );
 
     return {
-      ...results,
-      page: commentsWithAuthors,
+      ...result,
+      page: pageWithAuthors,
     };
   },
 });
+
 
 
 export const likeComment = mutation({
@@ -134,13 +136,49 @@ export const getReplies = query({
     parentCommentId: v.id("comments"),
   },
   handler: async (ctx, args) => {
-    return ctx.db
+    const user = await authComponent.safeGetAuthUser(ctx);
+    let profile: { _id: any } | null = null;
+    if (user) {
+      profile = await ctx.db
+        .query("profiles")
+        .withIndex("by_authUserId", q => q.eq("authUserId", user._id))
+        .unique();
+    }
+
+    const replies = await ctx.db
       .query("comments")
       .withIndex("by_parentCommentId", q =>
         q.eq("parentCommentId", args.parentCommentId)
       )
       .order("asc")
       .collect();
+
+    const repliesWithAuthors = await Promise.all(
+      replies.map(async reply => {
+        const author = await ctx.db.get(reply.authorId);
+
+        // Check if current user liked this reply
+        let likedByMe = false;
+        if (profile) {
+          const profileId = profile._id;
+          const existingLike = await ctx.db
+            .query("commentLikes")
+            .withIndex("by_commentdId_and_profileId", q =>
+              q.eq("commentId", reply._id).eq("profileId", profileId)
+            )
+            .unique();
+          likedByMe = !!existingLike;
+        }
+
+        return {
+          ...reply,
+          author,
+          likedByMe,
+        };
+      })
+    );
+
+    return repliesWithAuthors;
   },
 });
 
