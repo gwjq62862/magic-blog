@@ -57,10 +57,10 @@ const CreateBlog = () => {
       let coverImageStorageId;
 
       if (coverFile) {
-        // get short-lived upload URL from Convex
+   
         const postUrl = await generateCoverUploadUrl();
 
-        //  POST the file to that URL
+   
         const uploadRes = await fetch(postUrl, {
           method: "POST",
           headers: { "Content-Type": coverFile.type },
@@ -83,10 +83,11 @@ const CreateBlog = () => {
         coverImageStorageId,
       });
       showToast.success("blog created successfully!");
-      router.push("/blog");
+     
       reset();
       setCoverFile(null);
       setCoverPreview(null);
+       router.push("/blog");
     } catch (err) {
       console.error(err);
     }

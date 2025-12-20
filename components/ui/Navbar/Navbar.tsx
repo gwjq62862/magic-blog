@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import React from "react";
-import MobileNavbar from "./MobileNavbar"; // Assuming this handles the hamburger menu
+import MobileNavbar from "./MobileNavbar"; 
 import Button from "../Button";
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
 import { ArrowLeftSquare, Plus } from "lucide-react";
@@ -18,7 +18,10 @@ const navbarLinks = [
     title: "Blog",
     href: "/blog",
   },
- 
+  {
+    title: "About",
+    href: "/about",
+  },
 ];
 
 const Navbar = () => {
