@@ -1,5 +1,6 @@
 import React from "react";
 import Button from "../ui/Button";
+import Link from "next/link";
 
 const Hero = () => {
   return (
@@ -12,10 +13,12 @@ const Hero = () => {
           Mind tricks, illusions, psychology hacks, and mind-expanding concepts.
         </p>
         <div className="flex flex-wrap gap-4 justify-center mt-4">
-          <Button size="lg" color="primary">
-            Read Articles
-          </Button>
-          <Button size="lg" color="white">
+          <Link href={'/blog'}>
+            <Button size="lg" color="primary">
+              Read Articles
+            </Button>
+          </Link>
+          <Button size="lg" color="white" onClick={() => alert("you will make community make soon")}>
             Join the Community
           </Button>
         </div>
