@@ -18,9 +18,7 @@ const Hero = () => {
               Read Articles
             </Button>
           </Link>
-          <Button size="lg" color="white" onClick={() => alert("you will make community make soon")}>
-            Join the Community
-          </Button>
+         
         </div>
       </div>
     </section>
